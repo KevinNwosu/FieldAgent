@@ -18,10 +18,10 @@ namespace FieldAgent.DAL.Repositories
             
             using (var db = DbFac.GetDbContext())
             {
-                var stuff = db.Agency.ToList();
-                if (stuff.Count > 0)
+                var agency = db.Agency.ToList();
+                if (agency.Count > 0)
                 {
-                    response.Data = stuff;
+                    response.Data = agency;
                 }
                 else
                 {
@@ -35,10 +35,10 @@ namespace FieldAgent.DAL.Repositories
             Response<Agency> response = new Response<Agency>();
             using (var db = DbFac.GetDbContext())
             {
-                var stuff = db.Agency.Find(agencyId);
-                if (stuff != null)
+                var agency = db.Agency.Find(agencyId);
+                if (agency != null)
                 {
-                    response.Data = stuff;
+                    response.Data = agency;
                 }
                 else
                 {
@@ -60,11 +60,24 @@ namespace FieldAgent.DAL.Repositories
         }
         public Response Update(Agency agency)
         {
-            throw new NotImplementedException();
+            Response response = new Response();
+            using (var db = DbFac.GetDbContext())
+            {
+                db.Agency.Update(agency);
+                db.SaveChanges();
+            }
+            return response;
         }
         public Response Delete(int agencyId)
         {
-            throw new NotImplementedException();
+            Response response = new Response();
+            using (var db = DbFac.GetDbContext())
+            {
+                var agency = db.Agency.Find(agencyId);
+                db.Agency.Remove(agency);
+                db.SaveChanges();
+            }
+            return response;
         }
     }
 }

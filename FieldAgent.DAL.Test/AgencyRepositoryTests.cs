@@ -19,6 +19,18 @@ namespace FieldAgent.DAL.Test
             ShortName = "FBI",
             LongName = "Federal Bureau of Investigation"
         };
+        Agency ISIS = new Agency
+        {
+            AgencyId = 2,
+            ShortName = "ISIS",
+            LongName = "The International Secret Intelligence Service"
+        };
+        Agency Pink = new Agency
+        {
+            AgencyId = 4,
+            ShortName = "Pink",
+            LongName = "King Inc"
+        };
         [SetUp]
         public void Setup()
         {
@@ -52,6 +64,22 @@ namespace FieldAgent.DAL.Test
         {
             db.Insert(FBI);
             Assert.AreEqual(6, db.GetAll().Data.Count);
+        }
+        
+        [Test]
+        public void UpdateUpdatesDatabase()
+        {
+            var status = db.Update(ISIS);
+            Assert.AreEqual(ISIS.LongName, db.Get(2).Data.LongName);
+            Assert.IsTrue(status.Success);
+        }
+
+        [Test]
+        public void DeleteRemovesAgency()
+        {
+            var status = db.Delete(Pink.AgencyId);
+            Assert.IsTrue(status.Success);
+            Assert.AreEqual(4, db.GetAll().Data.Count);
         }
     }
 }
