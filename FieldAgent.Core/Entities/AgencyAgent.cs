@@ -16,5 +16,7 @@ namespace FieldAgent.Core.Entities
         public bool IsActive { get; set; }
         public int SecurityClearanceId { get; set; }
         public SecurityClearance SecurityClearance { get; set; }
+        public Agent Agent { get; set; }
+        public Agency Agency { get; set; }
     }
 }
