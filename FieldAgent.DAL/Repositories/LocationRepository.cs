@@ -10,26 +10,26 @@ using System.Threading.Tasks;
 
 namespace FieldAgent.DAL.Repositories
 {
-    public class AgentRepository : IAgentRepository
+    public class LocationRepository : ILocationRepository
     {
         public DBFactory DbFac { get; set; }
 
-        public AgentRepository(DBFactory dbfac)
+        public LocationRepository(DBFactory dbfac)
         {
             DbFac = dbfac;
         }
 
-        public Response<Agent> Insert(Agent agent)
+        public Response<Location> Insert(Location location)
         {
-            Response<Agent> response = new Response<Agent>();
+            Response<Location> response = new Response<Location>();
 
             try
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    db.Agent.Add(agent);
+                    db.Location.Add(location);
                     db.SaveChanges();
-                    response.Data = agent;
+                    response.Data = location;
                     return response;
                 }
             }
@@ -40,7 +40,7 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response Update(Agent agent)
+        public Response Update(Location location)
         {
             Response response = new Response();
 
@@ -48,7 +48,7 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    db.Agent.Update(agent);
+                    db.Location.Update(location);
                     db.SaveChanges();
                     return response;
                 }
@@ -60,7 +60,7 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response Delete(int agentId)
+        public Response Delete(int locationId)
         {
             Response response = new Response();
 
@@ -68,20 +68,8 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    foreach (AgencyAgent a in db.AgencyAgent.Where(a => a.AgentId == agentId).ToList())
-                    {
-                        db.AgencyAgent.Remove(a);
-                    }
-                    foreach (Alias a in db.Alias.Where(a => a.AgentId == agentId).ToList())
-                    {
-                        db.Alias.Remove(a);
-                    }
-                    foreach (MissionAgent ma in db.MissionAgent.Where(ma => ma.AgentId == agentId).ToList())
-                    {
-                        db.MissionAgent.Remove(ma);
-                    }
-                    var agent = db.Agent.Find(agentId);
-                    db.Agent.Remove(agent);
+                    var location = db.Location.Find(locationId);
+                    db.Location.Remove(location);
                     db.SaveChanges();
                     return response;
                 }
@@ -93,16 +81,16 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response<Agent> Get(int agentId)
+        public Response<Location> Get(int locationId)
         {
-            Response<Agent> response = new Response<Agent>();
+            Response<Location> response = new Response<Location>();
 
             try
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    var agent = db.Agent.Find(agentId);
-                    response.Data = agent;
+                    var location = db.Location.Find(locationId);
+                    response.Data = location;
                     return response;
                 }
             }
@@ -113,14 +101,22 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response<List<Mission>> GetMissions(int agentId)
+        public Response<List<Location>> GetByAgency(int agencyId)
         {
-            Response<List<Mission>> response = new Response<List<Mission>>();
-            
-            using (var db = DbFac.GetDbContext())
+            Response<List<Location>> response = new Response<List<Location>>();
+
+            try
             {
-                var missions = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(m => m.AgentId == agentId)).ToList();
-                response.Data = missions;
+                using (var db = DbFac.GetDbContext())
+                {
+                    var location = db.Location.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
+                    response.Data = location;
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
                 return response;
             }
         }

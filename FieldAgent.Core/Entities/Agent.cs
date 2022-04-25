@@ -8,7 +8,7 @@
         public DateTime DateOfBirth { get; set; }
         public decimal Height { get; set; }
         public List<AgencyAgent> AgencyAgents { get; set; }
-        public List<Mission> Missions { get; set; }
+        public List<MissionAgent> MissionAgents { get; set; }
         public List<Alias> Aliases { get; set; }
     }
 }

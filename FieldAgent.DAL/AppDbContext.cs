@@ -11,6 +11,7 @@ namespace FieldAgent.DAL
         public DbSet<Alias> Alias { get; set; }
         public DbSet<Location> Location { get; set; }
         public DbSet<Mission> Mission { get; set; }
+        public DbSet<MissionAgent> MissionAgent { get; set; }
         public DbSet<SecurityClearance> SecurityClearance { get; set; }
         public AppDbContext() : base()
         {
@@ -24,6 +25,8 @@ namespace FieldAgent.DAL
         {
             builder.Entity<AgencyAgent>()
                 .HasKey(aa => new { aa.AgencyId, aa.AgentId });
+            builder.Entity<MissionAgent>()
+                .HasKey(ma => new { ma.MissionId, ma.AgentId });
         }
     }
 }

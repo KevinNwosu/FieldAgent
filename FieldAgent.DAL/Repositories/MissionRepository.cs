@@ -2,18 +2,45 @@
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace FieldAgent.DAL.Repositories
 {
-    public class AgencyAgentRepository : IAgencyAgentRepository
+    public class MissionRepository : IMissionRepository
     {
         public DBFactory DbFac { get; set; }
 
-        public AgencyAgentRepository(DBFactory dbfac)
+        public MissionRepository(DBFactory dbfac)
         {
             DbFac = dbfac;
         }
-        public Response Delete(int agencyid, int agentid)
+
+        public Response<Mission> Insert(Mission mission)
+        {
+            Response<Mission> response = new Response<Mission>();
+
+            try
+            {
+                using (var db = DbFac.GetDbContext())
+                {
+                    db.Mission.Add(mission);
+                    db.SaveChanges();
+                    response.Data = mission;
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
+        }
+
+        public Response Update(Mission mission)
         {
             Response response = new Response();
 
@@ -21,8 +48,7 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    var agencyAgent = db.AgencyAgent.Find(agencyid, agentid);
-                    db.AgencyAgent.Remove(agencyAgent);
+                    db.Mission.Update(mission);
                     db.SaveChanges();
                     return response;
                 }
@@ -34,88 +60,7 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response<AgencyAgent> Get(int agencyid, int agentid)
-        {
-            Response<AgencyAgent> response = new Response<AgencyAgent>();
-
-            try
-            {
-                using (var db = DbFac.GetDbContext())
-                {
-                    var agencyAgent = db.AgencyAgent.Where(a => a.AgencyId == agencyid && a.AgentId == agentid).FirstOrDefault();
-                    response.Data = agencyAgent;
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.AddMessage(ex.Message);
-                return response;
-            }
-        }
-
-        public Response<List<AgencyAgent>> GetByAgency(int agencyId)
-        {
-            Response<List<AgencyAgent>> response = new Response<List<AgencyAgent>>();
-
-            try
-            {
-                using (var db = DbFac.GetDbContext())
-                {
-                    var agencyAgent = db.AgencyAgent.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
-                    response.Data = agencyAgent;
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.AddMessage(ex.Message);
-                return response;
-            }
-        }
-
-        public Response<List<AgencyAgent>> GetByAgent(int agentId)
-        {
-            Response<List<AgencyAgent>> response = new Response<List<AgencyAgent>>();
-
-            try
-            {
-                using (var db = DbFac.GetDbContext())
-                {
-                    var agencyAgent = db.AgencyAgent.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
-                    response.Data = agencyAgent;
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.AddMessage(ex.Message);
-                return response;
-            }
-        }
-
-        public Response<AgencyAgent> Insert(AgencyAgent agencyAgent)
-        {
-            Response<AgencyAgent> response = new();
-
-            try
-            {
-                using (var db = DbFac.GetDbContext())
-                {
-                    db.AgencyAgent.Add(agencyAgent);
-                    db.SaveChanges();
-                    response.Data = agencyAgent;
-                    return response;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.AddMessage(ex.Message);
-                return response;
-            }
-        }
-
-        public Response Update(AgencyAgent agencyAgent)
+        public Response Delete(int missionId)
         {
             Response response = new Response();
 
@@ -123,8 +68,73 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    db.AgencyAgent.Update(agencyAgent);
+                    foreach (MissionAgent ma in db.MissionAgent.Where(ma => ma.MissionId == missionId).ToList())
+                    {
+                        db.MissionAgent.Remove(ma);
+                    }
+                    var mission = db.Mission.Find(missionId);
+                    db.Mission.Remove(mission);
                     db.SaveChanges();
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
+        }
+
+        public Response<Mission> Get(int missionId)
+        {
+            Response<Mission> response = new Response<Mission>();
+
+            try
+            {
+                using (var db = DbFac.GetDbContext())
+                {
+                    var mission = db.Mission.Find(missionId);
+                    response.Data = mission;
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
+        }
+
+        public Response<List<Mission>> GetByAgency(int agencyId)
+        {
+            Response<List<Mission>> response = new Response<List<Mission>>();
+
+            try
+            {
+                using (var db = DbFac.GetDbContext())
+                {
+                    var mission = db.Mission.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
+                    response.Data = mission;
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
+        }
+
+        public Response<List<Mission>> GetByAgent(int agentId)
+        {
+            Response<List<Mission>> response = new Response<List<Mission>>();
+
+            try
+            {
+                using (var db = DbFac.GetDbContext())
+                {
+                    var mission = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(a => a.AgentId == agentId)).ToList();
+                    response.Data = mission;
                     return response;
                 }
             }

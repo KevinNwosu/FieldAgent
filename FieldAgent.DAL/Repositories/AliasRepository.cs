@@ -10,26 +10,26 @@ using System.Threading.Tasks;
 
 namespace FieldAgent.DAL.Repositories
 {
-    public class AgentRepository : IAgentRepository
+    public class AliasRepository : IAliasRepository
     {
         public DBFactory DbFac { get; set; }
 
-        public AgentRepository(DBFactory dbfac)
+        public AliasRepository(DBFactory dbfac)
         {
             DbFac = dbfac;
         }
 
-        public Response<Agent> Insert(Agent agent)
+        public Response<Alias> Insert(Alias alias)
         {
-            Response<Agent> response = new Response<Agent>();
+            Response<Alias> response = new Response<Alias>();
 
             try
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    db.Agent.Add(agent);
+                    db.Alias.Add(alias);
                     db.SaveChanges();
-                    response.Data = agent;
+                    response.Data = alias;
                     return response;
                 }
             }
@@ -40,7 +40,7 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response Update(Agent agent)
+        public Response Update(Alias alias)
         {
             Response response = new Response();
 
@@ -48,7 +48,7 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    db.Agent.Update(agent);
+                    db.Alias.Update(alias);
                     db.SaveChanges();
                     return response;
                 }
@@ -60,7 +60,7 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response Delete(int agentId)
+        public Response Delete(int aliasId)
         {
             Response response = new Response();
 
@@ -68,20 +68,8 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    foreach (AgencyAgent a in db.AgencyAgent.Where(a => a.AgentId == agentId).ToList())
-                    {
-                        db.AgencyAgent.Remove(a);
-                    }
-                    foreach (Alias a in db.Alias.Where(a => a.AgentId == agentId).ToList())
-                    {
-                        db.Alias.Remove(a);
-                    }
-                    foreach (MissionAgent ma in db.MissionAgent.Where(ma => ma.AgentId == agentId).ToList())
-                    {
-                        db.MissionAgent.Remove(ma);
-                    }
-                    var agent = db.Agent.Find(agentId);
-                    db.Agent.Remove(agent);
+                    var alias = db.Alias.Find(aliasId);
+                    db.Alias.Remove(alias);
                     db.SaveChanges();
                     return response;
                 }
@@ -93,16 +81,16 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response<Agent> Get(int agentId)
+        public Response<Alias> Get(int aliasId)
         {
-            Response<Agent> response = new Response<Agent>();
+            Response<Alias> response = new Response<Alias>();
 
             try
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    var agent = db.Agent.Find(agentId);
-                    response.Data = agent;
+                    var alias = db.Alias.Find(aliasId);
+                    response.Data = alias;
                     return response;
                 }
             }
@@ -113,14 +101,22 @@ namespace FieldAgent.DAL.Repositories
             }
         }
 
-        public Response<List<Mission>> GetMissions(int agentId)
+        public Response<List<Alias>> GetByAgent(int agentId)
         {
-            Response<List<Mission>> response = new Response<List<Mission>>();
-            
-            using (var db = DbFac.GetDbContext())
+            Response<List<Alias>> response = new Response<List<Alias>>();
+
+            try
             {
-                var missions = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(m => m.AgentId == agentId)).ToList();
-                response.Data = missions;
+                using (var db = DbFac.GetDbContext())
+                {
+                    var alias = db.Alias.Include(a => a.AgentId).Where(a => a.AgentId == agentId).ToList();
+                    response.Data = alias;
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
                 return response;
             }
         }
