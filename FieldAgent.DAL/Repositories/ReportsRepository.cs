@@ -48,12 +48,14 @@ namespace FieldAgent.DAL.Repositories
                                 DateOfBirth = (DateTime)reader["DateOfBirth"],
                                 CompletedMissionCount = (int)reader["NumberOfMissions"]
                             });
+                            response.Success = true;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    response.AddMessage(ex.Message);
+                    response.Message = ex.Message;
+                    response.Success = false;
                 }
             }
 
@@ -86,12 +88,14 @@ namespace FieldAgent.DAL.Repositories
                                 DateOfBirth = (DateTime)reader["DateOfBirth"],
                                 DeactivationDate = (DateTime)reader["DeactivationDate"],
                             });
+                            response.Success = true;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    response.AddMessage(ex.Message);
+                    response.Message = ex.Message;
+                    response.Success = false;
                 }
             }
 
@@ -118,20 +122,27 @@ namespace FieldAgent.DAL.Repositories
                     {
                         while (reader.Read())
                         {
-                            response.Data.Add(new ClearanceAuditListItem
+                            var row = new ClearanceAuditListItem();
+
+                            row.BadgeId = (Guid)reader["BadgeId"];
+                            row.NameLastFirst = reader["NameLastFirst"].ToString();
+                            row.DateOfBirth = (DateTime)reader["DateOfBirth"];
+                            row.ActivationDate = (DateTime)reader["ActivationDate"];
+
+                            if (reader["DeactivationDate"] != DBNull.Value)
                             {
-                                BadgeId = (Guid)reader["BadgeId"],
-                                NameLastFirst = reader["NameLastFirst"].ToString(),
-                                DateOfBirth = (DateTime)reader["DateOfBirth"],
-                                ActivationDate = (DateTime)reader["ActivationDate"],
-                                DeactivationDate = (DateTime)reader["DeactivationDate"],
-                            });
+                                row.DeactivationDate = (DateTime)reader["DeactivationDate"];
+                            }
+
+                            response.Data.Add(row);
                         }
+                        response.Success = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    response.AddMessage(ex.Message);
+                    response.Message = ex.Message;
+                    response.Success = false;
                 }
             }
 

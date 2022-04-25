@@ -28,12 +28,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var securityClearance = db.SecurityClearance.Find(securityClearanceId);
                     response.Data = securityClearance;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -48,12 +50,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var securityClearance = db.SecurityClearance.ToList();
                     response.Data = securityClearance;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }

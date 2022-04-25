@@ -8,13 +8,9 @@ namespace FieldAgent.Core
 {
     public class Response
     {
-        private List<string> messages = new List<string>();
-        public bool Success => messages.Count == 0;
-        public List<string> Messages => new List<string>(messages);
-        public void AddMessage(string message)
-        {
-            messages.Add(message);
-        }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+
     }
     public class Response<T> : Response
     {

@@ -30,12 +30,14 @@ namespace FieldAgent.DAL.Repositories
                     db.Mission.Add(mission);
                     db.SaveChanges();
                     response.Data = mission;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -50,12 +52,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     db.Mission.Update(mission);
                     db.SaveChanges();
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -75,12 +79,14 @@ namespace FieldAgent.DAL.Repositories
                     var mission = db.Mission.Find(missionId);
                     db.Mission.Remove(mission);
                     db.SaveChanges();
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -95,12 +101,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var mission = db.Mission.Find(missionId);
                     response.Data = mission;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -115,12 +123,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var mission = db.Mission.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
                     response.Data = mission;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -135,12 +145,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var mission = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(a => a.AgentId == agentId)).ToList();
                     response.Data = mission;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }

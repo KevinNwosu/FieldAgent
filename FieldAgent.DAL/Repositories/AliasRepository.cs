@@ -2,11 +2,6 @@
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FieldAgent.DAL.Repositories
 {
@@ -30,12 +25,14 @@ namespace FieldAgent.DAL.Repositories
                     db.Alias.Add(alias);
                     db.SaveChanges();
                     response.Data = alias;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -50,12 +47,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     db.Alias.Update(alias);
                     db.SaveChanges();
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -71,12 +70,14 @@ namespace FieldAgent.DAL.Repositories
                     var alias = db.Alias.Find(aliasId);
                     db.Alias.Remove(alias);
                     db.SaveChanges();
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -91,12 +92,14 @@ namespace FieldAgent.DAL.Repositories
                 {
                     var alias = db.Alias.Find(aliasId);
                     response.Data = alias;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }
@@ -109,14 +112,16 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = DbFac.GetDbContext())
                 {
-                    var alias = db.Alias.Include(a => a.AgentId).Where(a => a.AgentId == agentId).ToList();
+                    var alias = db.Alias.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
                     response.Data = alias;
+                    response.Success = true;
                     return response;
                 }
             }
             catch (Exception ex)
             {
-                response.AddMessage(ex.Message);
+                response.Message = ex.Message;
+                response.Success = false;
                 return response;
             }
         }

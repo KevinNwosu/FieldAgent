@@ -5,10 +5,11 @@ using NUnit.Framework;
 
 namespace FieldAgent.DAL.Test
 {
-    public class Tests
+    public class AgencyRepositoryTests
     {
         AgencyRepository db;
         DBFactory dbf;
+        MissionRepository missionRepo;
         Agency Odin = new Agency
         {
             ShortName = "ODIN",
@@ -27,7 +28,6 @@ namespace FieldAgent.DAL.Test
         };
         Agency Pink = new Agency
         {
-            AgencyId = 4,
             ShortName = "Pink",
             LongName = "King Inc"
         };
@@ -36,8 +36,9 @@ namespace FieldAgent.DAL.Test
         {
             ConfigProvider cp = new ConfigProvider();
             dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new AgencyRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodStateAgency");
+            missionRepo = new MissionRepository(dbf);
+            db = new AgencyRepository(dbf, missionRepo);
+            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
         }
 
         [Test]
@@ -56,13 +57,12 @@ namespace FieldAgent.DAL.Test
         public void GetFindsNoData()
         {
             Assert.IsNull(db.Get(10).Data);
-            Assert.IsFalse(db.Get(10).Success);
         }
         
         [Test]
         public void InsertAddsToDatabase()
         {
-            db.Insert(FBI);
+            db.Insert(Pink);
             Assert.AreEqual(6, db.GetAll().Data.Count);
         }
         
@@ -77,7 +77,7 @@ namespace FieldAgent.DAL.Test
         [Test]
         public void DeleteRemovesAgency()
         {
-            var status = db.Delete(Pink.AgencyId);
+            var status = db.Delete(ISIS.AgencyId);
             Assert.IsTrue(status.Success);
             Assert.AreEqual(4, db.GetAll().Data.Count);
         }
