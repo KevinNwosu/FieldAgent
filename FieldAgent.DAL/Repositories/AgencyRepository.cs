@@ -16,68 +16,110 @@ namespace FieldAgent.DAL.Repositories
         {
             Response<List<Agency>> response = new Response<List<Agency>>();
             
-            using (var db = DbFac.GetDbContext())
+            try
             {
-                var agency = db.Agency.ToList();
-                if (agency.Count > 0)
+                using (var db = DbFac.GetDbContext())
                 {
+                    var agency = db.Agency.ToList();
                     response.Data = agency;
+                    return response;
                 }
-                else
-                {
-                    response.AddMessage("No data found");
-                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
                 return response;
             }
         }
         public Response<Agency> Get(int agencyId)
         {
             Response<Agency> response = new Response<Agency>();
-            using (var db = DbFac.GetDbContext())
+            
+            try
             {
-                var agency = db.Agency.Find(agencyId);
-                if (agency != null)
+                using (var db = DbFac.GetDbContext())
                 {
+                    var agency = db.Agency.Find(agencyId);
                     response.Data = agency;
+                    return response;
                 }
-                else
-                {
-                    response.AddMessage("Agency not found");
-                }
+            }
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
                 return response;
             }
         }
         public Response<Agency> Insert(Agency agency)
         {
             Response<Agency> response = new Response<Agency>();
-            using (var db = DbFac.GetDbContext())
+            
+            try
             {
-                db.Agency.Add(agency);
-                db.SaveChanges();
-                response.Data = agency;
+                using (var db = DbFac.GetDbContext())
+                {
+                    db.Agency.Add(agency);
+                    db.SaveChanges();
+                    response.Data = agency;
+                    return response;
+                }
             }
-            return response;
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
         }
         public Response Update(Agency agency)
         {
             Response response = new Response();
-            using (var db = DbFac.GetDbContext())
+            
+            try
             {
-                db.Agency.Update(agency);
-                db.SaveChanges();
+                using (var db = DbFac.GetDbContext())
+                {
+                    db.Agency.Update(agency);
+                    db.SaveChanges();
+                    return response;
+                }
             }
-            return response;
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
         }
         public Response Delete(int agencyId)
         {
             Response response = new Response();
-            using (var db = DbFac.GetDbContext())
+            
+            try
             {
-                var agency = db.Agency.Find(agencyId);
-                db.Agency.Remove(agency);
-                db.SaveChanges();
+                using (var db = DbFac.GetDbContext())
+                {
+                    foreach(AgencyAgent a in db.AgencyAgent.Where(a => a.AgencyId == agencyId).ToList())
+                    {
+                        db.AgencyAgent.Remove(a);
+                    }
+                    foreach (Location l in db.Location.Where(l => l.AgencyId == agencyId).ToList())
+                    {
+                        db.Location.Remove(l);
+                    }
+                    foreach (Mission m in db.Mission.Where(m => m.AgencyId == agencyId).ToList())
+                    {
+                        db.Mission.Remove(m);
+                    }
+                    var agency = db.Agency.Find(agencyId);
+                    db.Agency.Remove(agency);
+                    db.SaveChanges();
+                    return response;
+                }
             }
-            return response;
+            catch (Exception ex)
+            {
+                response.AddMessage(ex.Message);
+                return response;
+            }
         }
     }
 }
