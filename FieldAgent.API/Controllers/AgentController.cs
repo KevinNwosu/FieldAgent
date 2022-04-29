@@ -126,7 +126,7 @@ namespace FieldAgent.API.Controllers
             }
             
         }
-        [HttpDelete("agentId"), Authorize]
+        [HttpDelete("{agentId}"), Authorize]
         public IActionResult DeleteAgent(int agentId)
         {
             var findResult = _agentRepository.Get(agentId);
@@ -134,7 +134,7 @@ namespace FieldAgent.API.Controllers
             {
                 return NotFound(findResult.Message);
             }
-            var result = _agentRepository.Delete(agentId);
+            var result = _agentRepository.Delete(findResult.Data.AgentId);
             if (!result.Success)
             {
                 return BadRequest(result.Message);
