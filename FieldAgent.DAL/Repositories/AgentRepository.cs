@@ -2,7 +2,6 @@
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +11,11 @@ namespace FieldAgent.DAL.Repositories
 {
     public class AgentRepository : IAgentRepository
     {
-        public DBFactory DbFac { get; set; }
+        private DbContextOptions dbco;
 
-        public AgentRepository(DBFactory dbfac)
+        public AgentRepository(FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
         }
 
         public Response<Agent> Insert(Agent agent)
@@ -25,7 +24,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Agent.Add(agent);
                     db.SaveChanges();
@@ -48,7 +47,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Agent.Update(agent);
                     db.SaveChanges();
@@ -70,7 +69,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     foreach (AgencyAgent a in db.AgencyAgent.Where(a => a.AgentId == agentId).ToList())
                     {
@@ -105,7 +104,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agent = db.Agent.Find(agentId);
                     response.Data = agent;
@@ -125,7 +124,7 @@ namespace FieldAgent.DAL.Repositories
         {
             Response<List<Mission>> response = new Response<List<Mission>>();
             
-            using (var db = DbFac.GetDbContext())
+            using (var db = new AppDbContext(dbco))
             {
                 var missions = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(m => m.AgentId == agentId)).ToList();
                 response.Data = missions;

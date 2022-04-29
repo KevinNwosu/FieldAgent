@@ -7,11 +7,11 @@ namespace FieldAgent.DAL.Repositories
 {
     public class AgencyAgentRepository : IAgencyAgentRepository
     {
-        public DBFactory DbFac { get; set; }
+        private DbContextOptions dbco;
 
-        public AgencyAgentRepository(DBFactory dbfac)
+        public AgencyAgentRepository(FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
         }
         public Response Delete(int agencyid, int agentid)
         {
@@ -19,7 +19,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Find(agencyid, agentid);
                     db.AgencyAgent.Remove(agencyAgent);
@@ -42,7 +42,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Where(a => a.AgencyId == agencyid && a.AgentId == agentid).FirstOrDefault();
                     response.Data = agencyAgent;
@@ -64,7 +64,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
                     response.Data = agencyAgent;
@@ -86,7 +86,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
                     response.Data = agencyAgent;
@@ -108,7 +108,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.AgencyAgent.Add(agencyAgent);
                     db.SaveChanges();
@@ -131,7 +131,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.AgencyAgent.Update(agencyAgent);
                     db.SaveChanges();

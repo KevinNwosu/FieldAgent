@@ -2,21 +2,16 @@
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FieldAgent.DAL.Repositories
 {
     public class LocationRepository : ILocationRepository
     {
-        public DBFactory DbFac { get; set; }
+        private DbContextOptions dbco;
 
-        public LocationRepository(DBFactory dbfac)
+        public LocationRepository(FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
         }
 
         public Response<Location> Insert(Location location)
@@ -25,7 +20,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Location.Add(location);
                     db.SaveChanges();
@@ -48,7 +43,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Location.Update(location);
                     db.SaveChanges();
@@ -70,7 +65,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var location = db.Location.Find(locationId);
                     db.Location.Remove(location);
@@ -93,7 +88,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var location = db.Location.Find(locationId);
                     response.Data = location;
@@ -115,7 +110,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var location = db.Location.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
                     response.Data = location;

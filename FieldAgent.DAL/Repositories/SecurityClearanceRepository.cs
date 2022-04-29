@@ -1,6 +1,7 @@
 ﻿using FieldAgent.Core;
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace FieldAgent.DAL.Repositories
 {
     public class SecurityClearanceRepository : ISecurityClearanceRepository
     {
-        public DBFactory DbFac { get; set; }
+        private DbContextOptions dbco;
 
-        public SecurityClearanceRepository(DBFactory dbfac)
+        public SecurityClearanceRepository(FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
         }
 
         public Response<SecurityClearance> Get(int securityClearanceId)
@@ -24,7 +25,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var securityClearance = db.SecurityClearance.Find(securityClearanceId);
                     response.Data = securityClearance;
@@ -46,7 +47,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var securityClearance = db.SecurityClearance.ToList();
                     response.Data = securityClearance;

@@ -1,17 +1,19 @@
 ﻿using FieldAgent.Core;
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
+using Microsoft.EntityFrameworkCore;
 
 namespace FieldAgent.DAL.Repositories
 {
     public class AgencyRepository : IAgencyRepository
     {
-        public DBFactory DbFac { get; set; }
         public MissionRepository MissionRepository { get; set; }
 
-        public AgencyRepository(DBFactory dbfac, MissionRepository missionRepository)
+        private DbContextOptions dbco;
+
+        public AgencyRepository(MissionRepository missionRepository, FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
             MissionRepository = missionRepository;
         }
         public Response<List<Agency>> GetAll()
@@ -20,7 +22,7 @@ namespace FieldAgent.DAL.Repositories
             
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agency = db.Agency.ToList();
                     response.Data = agency;
@@ -41,7 +43,7 @@ namespace FieldAgent.DAL.Repositories
             
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var agency = db.Agency.Find(agencyId);
                     response.Data = agency;
@@ -62,7 +64,7 @@ namespace FieldAgent.DAL.Repositories
             
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Agency.Add(agency);
                     db.SaveChanges();
@@ -84,7 +86,7 @@ namespace FieldAgent.DAL.Repositories
             
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Agency.Update(agency);
                     db.SaveChanges();
@@ -105,7 +107,7 @@ namespace FieldAgent.DAL.Repositories
             
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     foreach(AgencyAgent a in db.AgencyAgent.Where(a => a.AgencyId == agencyId).ToList())
                     {

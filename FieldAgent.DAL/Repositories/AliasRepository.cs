@@ -7,11 +7,11 @@ namespace FieldAgent.DAL.Repositories
 {
     public class AliasRepository : IAliasRepository
     {
-        public DBFactory DbFac { get; set; }
+        private DbContextOptions dbco;
 
-        public AliasRepository(DBFactory dbfac)
+        public AliasRepository(FactoryMode mode = FactoryMode.TEST)
         {
-            DbFac = dbfac;
+            dbco = DBFactory.GetDbContext(mode);
         }
 
         public Response<Alias> Insert(Alias alias)
@@ -20,7 +20,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Alias.Add(alias);
                     db.SaveChanges();
@@ -43,7 +43,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     db.Alias.Update(alias);
                     db.SaveChanges();
@@ -65,7 +65,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var alias = db.Alias.Find(aliasId);
                     db.Alias.Remove(alias);
@@ -88,7 +88,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var alias = db.Alias.Find(aliasId);
                     response.Data = alias;
@@ -110,7 +110,7 @@ namespace FieldAgent.DAL.Repositories
 
             try
             {
-                using (var db = DbFac.GetDbContext())
+                using (var db = new AppDbContext(dbco))
                 {
                     var alias = db.Alias.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
                     response.Data = alias;
