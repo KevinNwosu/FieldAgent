@@ -8,6 +8,6 @@ namespace FieldAgent.API.Models
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public decimal Height { get; set; }
-        public List<Mission> Mission { get; set; }
+        public List<Mission> Missions { get; set; }
     }
 }

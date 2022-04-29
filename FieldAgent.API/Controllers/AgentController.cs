@@ -1,4 +1,5 @@
 ﻿using FieldAgent.API.Models;
+using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace FieldAgent.API.Controllers
         }
         [HttpGet]
         [Route("/api/[controller]/{id}", Name = "GetAgent")]
-        public IActionResult Get(int id)
+        public IActionResult GetAgent(int id)
         {
             var agent = _agentRepository.Get(id);
             if (!agent.Success)
@@ -32,6 +33,60 @@ namespace FieldAgent.API.Controllers
                 DateOfBirth = agent.Data.DateOfBirth,
                 Height = agent.Data.Height,
             });
+        }
+        [HttpGet]
+        [Route("/api/[controller]/{id}/missions", Name = "GetAgentMissions")]
+        public IActionResult GetAgentMissions(int id)
+        {
+            var agent = _agentRepository.Get(id);
+            var missions = _agentRepository.GetMissions(id);
+            if (!missions.Success)
+            {
+                return BadRequest(missions.Message);
+            }
+            else
+            {
+                return Ok(missions.Data.Select(
+                    m => new MissionModel()
+                    {
+                        MissionId = m.MissionId,
+                        CodeName = m.CodeName,
+                        Notes = m.Notes,
+                        StartDate = m.StartDate,
+                        ProjectedEndDate = m.ProjectedEndDate,
+                        ActualEndDate = m.ActualEndDate,
+                        OperationalCost = m.OperationalCost,
+                        AgencyId = m.AgencyId,
+                    }));
+            }   
+        }
+        [HttpPost]
+        public IActionResult AddAgent(ViewAgentModel agent)
+        {
+            if (ModelState.IsValid)
+            {
+                Agent newAgent = new Agent()
+                {
+                    FirstName = agent.FirstName,
+                    LastName = agent.LastName,
+                    DateOfBirth = agent.DateOfBirth,
+                    Height = agent.Height
+                };
+                
+                var result = _agentRepository.Insert(newAgent);
+                if (!result.Success)
+                {
+                    return BadRequest(result.Message);
+                }
+                else
+                {
+                    return CreatedAtRoute(nameof(GetAgent), new { id = result.Data.AgentId }, result.Data);
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
     }
 }
