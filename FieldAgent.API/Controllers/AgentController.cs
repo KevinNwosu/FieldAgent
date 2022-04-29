@@ -1,6 +1,7 @@
 ﻿using FieldAgent.API.Models;
 using FieldAgent.Core.Entities;
 using FieldAgent.Core.Interfaces.DAL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -86,6 +87,61 @@ namespace FieldAgent.API.Controllers
             else
             {
                 return BadRequest(ModelState);
+            }
+        }
+        [HttpPut, Authorize]
+        public IActionResult UpdateAgent(ViewAgentModel agent)
+        {
+            if (ModelState.IsValid && agent.AgentId > 0)
+            {
+                Agent updatedAgent = new Agent()
+                {
+                    AgentId = agent.AgentId,
+                    FirstName = agent.FirstName,
+                    LastName = agent.LastName,
+                    DateOfBirth = agent.DateOfBirth,
+                    Height = agent.Height
+                };
+
+                var findResult = _agentRepository.Get(agent.AgentId);
+                if (!findResult.Success)
+                {
+                    return NotFound(findResult.Message);
+                }
+                var result = _agentRepository.Update(updatedAgent);
+                if (!result.Success)
+                {
+                    return BadRequest(result.Message);
+                }
+                else
+                {
+                    return Ok(updatedAgent);
+                }
+            }
+            else
+            {
+                if (agent.AgentId < 1) 
+                    ModelState.AddModelError("AgentId", "Invalid Agent Id");
+                return BadRequest(ModelState);
+            }
+            
+        }
+        [HttpDelete("agentId"), Authorize]
+        public IActionResult DeleteAgent(int agentId)
+        {
+            var findResult = _agentRepository.Get(agentId);
+            if (!findResult.Success)
+            {
+                return NotFound(findResult.Message);
+            }
+            var result = _agentRepository.Delete(agentId);
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            else
+            {
+                return Ok(findResult.Data);
             }
         }
     }
