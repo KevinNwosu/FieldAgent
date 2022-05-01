@@ -107,17 +107,26 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agent = db.Agent.Find(agentId);
-                    response.Data = agent;
-                    response.Success = true;
-                    return response;
+                    if (agent != null)
+                    {
+                        response.Data = agent;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Agent not found";
+                        response.Success = false;
+                    }
+                    
                 }
             }
             catch (Exception ex)
             {
                 response.Message = ex.Message;
                 response.Success = false;
-                return response;
+                
             }
+            return response;
         }
 
         public Response<List<Mission>> GetMissions(int agentId)
@@ -127,8 +136,16 @@ namespace FieldAgent.DAL.Repositories
             using (var db = new AppDbContext(dbco))
             {
                 var missions = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(m => m.AgentId == agentId)).ToList();
-                response.Data = missions;
-                response.Success = true;
+                if (missions != null)
+                {
+                    response.Data = missions;
+                    response.Success = true;
+                }
+                else
+                {
+                    response.Message = "Missions not found";
+                    response.Success = false;
+                }
                 return response;
             }
         }

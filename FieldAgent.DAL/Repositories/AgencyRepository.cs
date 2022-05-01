@@ -25,8 +25,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agency = db.Agency.ToList();
-                    response.Data = agency;
-                    response.Success = true;
+                    if (agency.Count > 0)
+                    {
+                        response.Data = agency;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "No agencies found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }
@@ -46,8 +54,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agency = db.Agency.Find(agencyId);
-                    response.Data = agency;
-                    response.Success = true;
+                    if (agency != null)
+                    {
+                        response.Data = agency;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "No agency found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }

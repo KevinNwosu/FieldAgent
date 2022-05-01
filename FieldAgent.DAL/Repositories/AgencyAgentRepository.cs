@@ -45,8 +45,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Where(a => a.AgencyId == agencyid && a.AgentId == agentid).FirstOrDefault();
-                    response.Data = agencyAgent;
-                    response.Success = true;
+                    if (agencyAgent != null)
+                    {
+                        response.Data = agencyAgent;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Agency Agent not found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }
@@ -67,8 +75,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
-                    response.Data = agencyAgent;
-                    response.Success = true;
+                    if (agencyAgent != null)
+                    {
+                        response.Data = agencyAgent;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Agency Agent not found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }
@@ -89,8 +105,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var agencyAgent = db.AgencyAgent.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
-                    response.Data = agencyAgent;
-                    response.Success = true;
+                    if (agencyAgent != null)
+                    {
+                        response.Data = agencyAgent;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Agency Agent not found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }

@@ -28,8 +28,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var securityClearance = db.SecurityClearance.Find(securityClearanceId);
-                    response.Data = securityClearance;
-                    response.Success = true;
+                    if (securityClearance != null)
+                    {
+                        response.Data = securityClearance;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Security clearance not found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }
@@ -50,8 +58,16 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var securityClearance = db.SecurityClearance.ToList();
-                    response.Data = securityClearance;
-                    response.Success = true;
+                    if (securityClearance != null)
+                    {
+                        response.Data = securityClearance;
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Message = "Security clearances not found";
+                        response.Success = false;
+                    }
                     return response;
                 }
             }

@@ -91,8 +91,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var alias = db.Alias.Find(aliasId);
-                    response.Data = alias;
-                    response.Success = true;
+                    if (alias != null)
+                    {
+                        response.Data = alias;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Alias not found";
+                        response.Success = false;
+                        return response;
+                    }
                     return response;
                 }
             }
@@ -113,8 +123,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var alias = db.Alias.Include(a => a.Agent).Where(a => a.AgentId == agentId).ToList();
-                    response.Data = alias;
-                    response.Success = true;
+                    if (alias != null)
+                    {
+                        response.Data = alias;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Alias not found";
+                        response.Success = false;
+                        return response;
+                    }
                     return response;
                 }
             }

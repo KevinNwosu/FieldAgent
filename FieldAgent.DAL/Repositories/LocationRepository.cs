@@ -91,9 +91,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var location = db.Location.Find(locationId);
-                    response.Data = location;
-                    response.Success = true;
-                    return response;
+                    if (location != null)
+                    {
+                        response.Data = location;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Location not found";
+                        response.Success = false;
+                        return response;
+                    }
                 }
             }
             catch (Exception ex)
@@ -113,9 +122,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var location = db.Location.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
-                    response.Data = location;
-                    response.Success = true;
-                    return response;
+                    if (location != null)
+                    {
+                        response.Data = location;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Location not found";
+                        response.Success = false;
+                        return response;
+                    }
                 }
             }
             catch (Exception ex)

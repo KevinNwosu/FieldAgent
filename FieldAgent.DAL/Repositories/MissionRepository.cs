@@ -100,9 +100,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var mission = db.Mission.Find(missionId);
-                    response.Data = mission;
-                    response.Success = true;
-                    return response;
+                    if (mission != null)
+                    {
+                        response.Data = mission;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Mission not found";
+                        response.Success = false;
+                        return response;
+                    }
                 }
             }
             catch (Exception ex)
@@ -121,10 +130,19 @@ namespace FieldAgent.DAL.Repositories
             {
                 using (var db = new AppDbContext(dbco))
                 {
-                    var mission = db.Mission.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
-                    response.Data = mission;
-                    response.Success = true;
-                    return response;
+                    var missions = db.Mission.Include(a => a.Agency).Where(a => a.AgencyId == agencyId).ToList();
+                    if (missions != null)
+                    {
+                        response.Data = missions;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Mission not found";
+                        response.Success = false;
+                        return response;
+                    }
                 }
             }
             catch (Exception ex)
@@ -144,9 +162,18 @@ namespace FieldAgent.DAL.Repositories
                 using (var db = new AppDbContext(dbco))
                 {
                     var mission = db.Mission.Include(m => m.MissionAgents).Where(m => m.MissionAgents.Any(a => a.AgentId == agentId)).ToList();
-                    response.Data = mission;
-                    response.Success = true;
-                    return response;
+                    if (mission != null)
+                    {
+                        response.Data = mission;
+                        response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        response.Message = "Mission not found";
+                        response.Success = false;
+                        return response;
+                    }
                 }
             }
             catch (Exception ex)
