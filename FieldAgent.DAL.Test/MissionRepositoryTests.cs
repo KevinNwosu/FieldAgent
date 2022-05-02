@@ -13,7 +13,6 @@ namespace FieldAgent.DAL.Test
     public class MissionRepositoryTests
     {
         MissionRepository db;
-        DBFactory dbf;
         Mission InsertMission = new Mission()
         {
             AgencyId = 1,
@@ -39,10 +38,9 @@ namespace FieldAgent.DAL.Test
         [SetUp]
         public void Setup()
         {
-            ConfigProvider cp = new ConfigProvider();
-            dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new MissionRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
+            MissionRepository setup = new MissionRepository(FactoryMode.TEST);
+            setup.SetKnownGoodState();
+            db = setup;
         }
         [Test]
         public void GetWorks()

@@ -13,7 +13,6 @@ namespace FieldAgent.DAL.Test
     public class AgentRepositoryTests
     {
         AgentRepository db;
-        DBFactory dbf;
         Agent InsertedAgent = new Agent()
         {
             FirstName = "Test",
@@ -33,10 +32,9 @@ namespace FieldAgent.DAL.Test
         [SetUp]
         public void Setup()
         {
-            ConfigProvider cp = new ConfigProvider();
-            dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new AgentRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
+            AgentRepository setup = new AgentRepository(FactoryMode.TEST);
+            setup.SetKnownGoodState();
+            db = setup;
         }
         [Test]
         public void GetAgent()

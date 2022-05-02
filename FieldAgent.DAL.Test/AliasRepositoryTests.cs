@@ -12,7 +12,6 @@ namespace FieldAgent.DAL.Test
     public class AliasRepositoryTests
     {
         AliasRepository db;
-        DBFactory dbf;
         Alias InsertedAlias = new Alias()
         {
             AgentId = 1,
@@ -32,10 +31,9 @@ namespace FieldAgent.DAL.Test
         [SetUp]
         public void Setup()
         {
-            ConfigProvider cp = new ConfigProvider();
-            dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new AliasRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
+            AliasRepository setup = new AliasRepository(FactoryMode.TEST);
+            setup.SetKnownGoodState();
+            db = setup;
         }
         [Test]
         public void GetWorks()

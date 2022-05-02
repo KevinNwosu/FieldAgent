@@ -9,6 +9,7 @@ namespace FieldAgent.DAL.Repositories
     {
         private DbContextOptions dbco;
 
+
         public AgencyAgentRepository(FactoryMode mode = FactoryMode.TEST)
         {
             dbco = DBFactory.GetDbContext(mode);
@@ -168,6 +169,13 @@ namespace FieldAgent.DAL.Repositories
                 response.Success = false;
             }
             return response;
+        }
+        public void SetKnownGoodState()
+        {
+            using (var db = new AppDbContext(dbco))
+            {
+                db.Database.ExecuteSqlRaw("SetKnownGoodState");
+            }
         }
     }
 }

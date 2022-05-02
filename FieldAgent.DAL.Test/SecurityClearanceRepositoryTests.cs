@@ -13,7 +13,6 @@ namespace FieldAgent.DAL.Test
     public class SecurityClearanceRepositoryTests
     {
         SecurityClearanceRepository db;
-        DBFactory dbf;
         SecurityClearance securityClearance = new SecurityClearance
         {
             SecurityClearanceId = 3,
@@ -23,10 +22,9 @@ namespace FieldAgent.DAL.Test
         [SetUp]
         public void Setup()
         {
-            ConfigProvider cp = new ConfigProvider();
-            dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new SecurityClearanceRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
+            SecurityClearanceRepository setup = new SecurityClearanceRepository(FactoryMode.TEST);
+            setup.SetKnownGoodState();
+            db = setup;
         }
         [Test]
         public void TestGet()

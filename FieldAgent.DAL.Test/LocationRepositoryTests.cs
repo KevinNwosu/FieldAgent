@@ -13,7 +13,6 @@ namespace FieldAgent.DAL.Test
     public class LocationRepositoryTests
     {
         LocationRepository db;
-        DBFactory dbf;
         Location Location = new Location()
         {
             AgencyId = 2,
@@ -39,10 +38,9 @@ namespace FieldAgent.DAL.Test
         [SetUp]
         public void Setup()
         {
-            ConfigProvider cp = new ConfigProvider();
-            dbf = new DBFactory(cp.Config, FactoryMode.TEST);
-            db = new LocationRepository(dbf);
-            dbf.GetDbContext().Database.ExecuteSqlRaw("SetKnownGoodState");
+            LocationRepository setup = new LocationRepository(FactoryMode.TEST);
+            setup.SetKnownGoodState();
+            db = setup;
         }
         [Test]
         public void GetWorks()
